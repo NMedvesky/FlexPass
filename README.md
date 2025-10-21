@@ -7,5 +7,7 @@ Install `uv` [https://docs.astral.sh/uv/getting-started/installation/]
 
 In a terminal, while navigated to the project directory, run:
 ```sh
-uv run main.py
+uv run manage.py runserver
 ```
+
+Then in your browser navigate to the url provided from the program output.
