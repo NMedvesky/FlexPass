@@ -1,5 +1,5 @@
 def main():
-    print("Hello from flexpass!")
+    print("Welcome to FlexPass!")
 
 
 if __name__ == "__main__":
