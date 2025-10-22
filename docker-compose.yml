@@ -1,0 +1,16 @@
+services:
+# PostgreSQL database
+  postgresql_db:
+    image: postgres:17.6-trixie
+    container_name: postgresql-db
+    restart: always
+    ports:
+      - "5432:5432" # Default PostgreSQL port
+    environment:
+      POSTGRES_PASSWORD: postgresql
+    volumes:
+      - postgresql_db_data:/var/lib/postgresql/data # Docker managed volume
+
+
+volumes:
+  postgresql_db_data:
