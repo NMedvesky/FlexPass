@@ -6,7 +6,7 @@ A system for managing students during flex times, and coordinating hall passes f
 ### Run the database
 Install `docker` [https://docs.docker.com/compose/install/]
 
-Navigate the project directory in a terminal, and run:
+Navigate to the project directory in a terminal, and run:
 ```sh
 docker compose up
 ```
