@@ -13,8 +13,6 @@ SCHEDULES = [
     "Mass Schedule",
     "Assembly Schedule",
 ]
-def test():
-    print(proper)
 
 def get_today_schedule():
     today = arrow.now().to("utc").floor("day")
@@ -42,9 +40,6 @@ if __name__ == "__main__":
     main()
 
 for schedule in SCHEDULES:
-    print("Current Time =", current_time)
     if schedule == "3 Period Block":
-        if "Current Time =" == "10:20":
-            test()
-    
-    
+        if current_time == "10:53":
+            
