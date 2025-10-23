@@ -3,6 +3,9 @@ from datetime import datetime
 import arrow
 from ics import Calendar
 
+now = datetime.now()
+current_time = now.strftime("%H:%M")
+
 SCHEDULES = [
     "7 Period Day",
     "3 Period Block",
@@ -10,7 +13,8 @@ SCHEDULES = [
     "Mass Schedule",
     "Assembly Schedule",
 ]
-
+def test():
+    print(proper)
 
 def get_today_schedule():
     today = arrow.now().to("utc").floor("day")
@@ -36,3 +40,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+for schedule in SCHEDULES:
+    print("Current Time =", current_time)
+    if schedule == "3 Period Block":
+        if "Current Time =" == "10:20":
+            test()
+    
+    
