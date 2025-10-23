@@ -1,5 +1,11 @@
 from django.contrib.auth import get_user_model
+
+# from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
+
+class Moderator(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 
 class Classroom(models.Model):
@@ -13,3 +19,4 @@ class Classroom(models.Model):
     open_room = models.BooleanField(
         default=False, help_text="Is the room availible to all students?"
     )
+    allowed_students = models.ManyToManyField(Moderator)
