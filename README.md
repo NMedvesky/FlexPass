@@ -20,3 +20,9 @@ uv run manage.py runserver
 ```
 
 Then in your browser navigate to the url provided from the program output.
+
+### Database Migrations
+If there are database changes you may need to migrate your local database. To do so make sure the database is running and then run the following command in the project directory:
+```sh
+uv run manage.py migrate
+```
