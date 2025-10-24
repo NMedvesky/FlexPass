@@ -1,15 +1,18 @@
-from django.db import models
+import uuid
+
 from django.contrib.auth.models import User
-from classroom.models import Classroom
+from django.db import models
+
+from classroom.models import Request
 
 
 class Student(models.Model):
-    # Provided by Student
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    current_location = models.ForeignKey(Classroom, on_delete=models.DO_NOTHING)
-    active_request = None
-    flex_room = None
+    current_location = models.UUIDField(default=None, null=True, blank=True)
+    active_request = models.ForeignKey(
+        Request, default=None, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    flex_room = models.UUIDField(default=None, null=True)
     flex_active = models.BooleanField(default=False)

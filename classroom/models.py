@@ -1,22 +1,61 @@
-from django.contrib.auth import get_user_model
+import random
+import string
+import uuid
 
-# from django.contrib.postgres.fields import ArrayField
+from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
-class Moderator(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+def generate_unique_join_code():
+    """Generates a unique 6-character alphanumeric join code."""
+    length = 6
+    characters = string.ascii_uppercase + string.digits
+    while True:
+        code = "".join(random.choice(characters) for _ in range(length))
+        if not Classroom.objects.filter(join_code=code).exists():
+            return code
+
+
+class Request(models.Model):
+    time_of_request = models.TimeField(auto_now=True, editable=False)
+    requesting_student = models.UUIDField(default=None, null=True)
+
+    destination = models.UUIDField(default=None, null=True)
+    reason = models.CharField(max_length=100, null=True)
 
 
 class Classroom(models.Model):
-    moderator = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    join_code = models.CharField(
+        max_length=6,
+        unique=True,
+        default=generate_unique_join_code,
+        editable=False,
+    )
+
     name = models.CharField(max_length=100)
+    moderator = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING)
     description = models.CharField(
-        max_length=200, help_text="Description of room for flex time."
+        max_length=200, help_text="Description of room for flex time.", blank=True
     )
     max_students = models.IntegerField(default=20)
-    student_count = models.IntegerField(default=0)
     open_room = models.BooleanField(
         default=False, help_text="Is the room availible to all students?"
     )
-    allowed_students = models.ManyToManyField(Moderator)
+    current_students = ArrayField(
+        models.UUIDField(default=None, null=True), default=list, blank=True
+    )
+    allowed_students = ArrayField(
+        models.UUIDField(default=None, null=True), default=list, blank=True
+    )
+    isFlexOne = models.BooleanField(help_text="Is this a flex room during flex 1.")
+
+    active_requests = models.ManyToManyField(Request, blank=True)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk and not self.join_code
+        ):  # Only generate on first save if not already set
+            self.join_code = generate_unique_join_code()
+        super().save(*args, **kwargs)
