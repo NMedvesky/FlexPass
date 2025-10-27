@@ -12,8 +12,14 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     current_location = models.UUIDField(default=None, null=True, blank=True)
     active_request = models.ForeignKey(
-        Request, default=None, null=True, blank=True, on_delete=models.DO_NOTHING
+        Request,
+        default=None,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name="active_student_request",
     )
     flex_room = models.UUIDField(default=None, null=True)
     flex_active = models.BooleanField(default=False)
-    request_history = models.ManyToManyField(Request, blank=True)
+    event_log = models.ManyToManyField(
+        Request, blank=True, related_name="event_log")
