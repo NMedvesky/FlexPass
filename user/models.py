@@ -16,3 +16,4 @@ class Student(models.Model):
     )
     flex_room = models.UUIDField(default=None, null=True)
     flex_active = models.BooleanField(default=False)
+    request_history = models.ManyToManyField(Request, blank=True)
