@@ -18,14 +18,26 @@ def generate_unique_join_code():
 
 
 class Request(models.Model):
+    # Defined by Program
     time_of_request = models.TimeField(auto_now=True, editable=False)
     requesting_student = models.UUIDField(default=None, null=True)
 
+    # Defined by Student
     destination = models.UUIDField(default=None, null=True)
     reason = models.CharField(max_length=100, null=True)
+    round_trip = models.BooleanField(
+        default=False,
+        help_text="Will the student come back to the flex room they left?",
+    )
+
+    # Defined by Moderator
+    approved = models.BooleanField(
+        default=False, help_text="Has the request been approved?"
+    )
 
 
 class Classroom(models.Model):
+    # Generated Values
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     join_code = models.CharField(
         max_length=6,
@@ -34,8 +46,12 @@ class Classroom(models.Model):
         editable=False,
     )
 
+    # Defined by Moderator
+    moderator = models.ForeignKey(
+        get_user_model(), on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
-    moderator = models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING)
+    isFlexOne = models.BooleanField(
+        help_text="Is this a flex room during flex 1.")
     description = models.CharField(
         max_length=200, help_text="Description of room for flex time.", blank=True
     )
@@ -43,14 +59,14 @@ class Classroom(models.Model):
     open_room = models.BooleanField(
         default=False, help_text="Is the room availible to all students?"
     )
-    current_students = ArrayField(
-        models.UUIDField(default=None, null=True), default=list, blank=True
-    )
     allowed_students = ArrayField(
         models.UUIDField(default=None, null=True), default=list, blank=True
     )
-    isFlexOne = models.BooleanField(help_text="Is this a flex room during flex 1.")
 
+    # Constantly Changing Values
+    current_students = ArrayField(
+        models.UUIDField(default=None, null=True), default=list, blank=True
+    )
     active_requests = models.ManyToManyField(Request, blank=True)
 
     def save(self, *args, **kwargs):
