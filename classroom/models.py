@@ -35,6 +35,9 @@ class Request(models.Model):
         default=False, help_text="Has the request been approved?"
     )
 
+    def __str__(self):
+        return str(self.time_of_request)
+
 
 class Classroom(models.Model):
     # Generated Values
@@ -68,6 +71,9 @@ class Classroom(models.Model):
         models.UUIDField(default=None, null=True), default=list, blank=True
     )
     active_requests = models.ManyToManyField(Request, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.id}"
 
     def save(self, *args, **kwargs):
         if (

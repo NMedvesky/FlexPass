@@ -23,3 +23,6 @@ class Student(models.Model):
     flex_active = models.BooleanField(default=False)
     event_log = models.ManyToManyField(
         Request, blank=True, related_name="event_log")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.id}"
