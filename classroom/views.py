@@ -1,10 +1,12 @@
 import uuid
+from urllib.parse import urlencode
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
+from .forms import RequestForm
 from .models import Classroom, Request
 
 
@@ -18,9 +20,12 @@ def send_request(
     destination: Classroom,
     reason: str,
     round_trip: bool,
-) -> bool:
+) -> str:
     if len(destination.current_students) >= destination.max_students:
-        return False
+        return "Room full! Unable to send request."
+
+    if student.id in destination.current_students:
+        return "Student already in room! Unable to send request."
 
     request = Request.objects.create(
         requesting_student=student.id,
@@ -28,10 +33,14 @@ def send_request(
         reason=reason,
         round_trip=round_trip,
     )
-    
-    # print(current_room.current_students)
-    # print(current_room.current_students.remove(student.id))
-    # print(current_room.current_students)
+
+    current_room.active_requests.add(request)
+    destination.current_students.append(student.id)
+    destination.save()
+    student.active_request = request
+    student.save()
+
+    return "Request Sent!"
 
 
 def approve_request():
@@ -39,23 +48,50 @@ def approve_request():
 
 
 @login_required()
-@staff_member_required()
-def room_list(request):
+def request(request):
     if request.method == "POST":
-        room_id = uuid.UUID(request.POST.get("room_id"))
-        destination = Classroom.objects.get(pk=room_id)
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            reason = form.get_reason()
+            round_trip = form.clean()["round_trip"]
 
-        current_room_id = request.user.student.current_location
-        current_room = Classroom.objects.get(pk=current_room_id)
+            # current_room_id = request.GET.get("current_room_id")
+            current_room_id = request.user.student.current_location
+            destination_room_id = request.GET.get("destination")
 
-        print("Request")
-        print(current_room)
-        print(destination)
+            current_room = Classroom.objects.get(pk=current_room_id)
+            destination = Classroom.objects.get(pk=destination_room_id)
 
-        send_request(
-            request.user.student, current_room, destination, "testing reason", False
-        )
+            status = send_request(
+                request.user.student, current_room, destination, reason, round_trip
+            )
 
+            encoded_params = urlencode({"status": status})
+            return redirect(f"/classroom/rooms?{encoded_params}")
+    else:
+        form = RequestForm()
+    return render(request, "request.html", {"form": form})
+
+
+@login_required()
+def room_list(request):
     rooms = Classroom.objects.all()
     context = {"rooms": rooms}
+
+    if request.method == "POST":
+        destination_room_id = uuid.UUID(request.POST.get("room_id"))
+        # destination = Classroom.objects.get(pk=room_id)
+
+        # current_room_id = request.user.student.current_location
+        # current_room = Classroom.objects.get(pk=current_room_id)
+
+        encoded_params = urlencode({
+            # "current_room_id": current_room_id,
+            "destination": destination_room_id,
+        })
+        return redirect(f"/classroom/request?{encoded_params}")
+    elif request.method == "GET":
+        status = request.GET.get("status")
+        context["status"] = status
+
     return render(request, "room_list.html", context)

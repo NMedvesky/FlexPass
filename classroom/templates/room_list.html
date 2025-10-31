@@ -1,4 +1,7 @@
 <h1>Room List</h1>
+{% if status %}
+<h2>{{ status }}</h2>
+{% endif %}
 <ul>
     {% for room in rooms %}
     {% with students=room.current_students|length %}
@@ -10,17 +13,23 @@
             <p>{{ room.description }}</p>
 
             <input type="hidden" name="room_id" value="{{ room.id }}">
-            {% if user.student.id in room.current_students %}
-            <button disabled>Request</button>
+            {% if user.student.active_request.destination == room.id %}
+                <button disabled>Request</button>
+                <small>You sent a request to this room.</small>
+            {% elif user.student.id in room.current_students %}
+                <button disabled>Request</button>
+                <small>You are in this room.</small>
+            {% elif user.student.active_request %}
+                <button disabled>Request</button>
             {% elif students >= room.max_students %}
-            <button disabled>Request</button>
+                <button disabled>Request</button>
             {% elif room.open_room == True %}
-            <button type="submit" value="{{ room.name }}">Request</button>
+                <button type="submit" value="{{ room.name }}">Request</button>
             {% elif user.student.id in room.allowed_students %}
-            <button type="submit">Request</button>
-            <small>You have special access to this room.</small>
+                <button type="submit">Request</button>
+                <small>You have special access to this room.</small>
             {% else %}
-            <button disabled>Request</button>
+                <button disabled>Request</button>
             {% endif %}
         </form>
     </li>

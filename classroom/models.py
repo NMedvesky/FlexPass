@@ -36,7 +36,7 @@ class Request(models.Model):
     )
 
     def __str__(self):
-        return str(self.time_of_request)
+        return f"{str(self.time_of_request)} - {self.reason}"
 
 
 class Classroom(models.Model):

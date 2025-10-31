@@ -1,0 +1,52 @@
+<form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+        {{ form.reason_choice.label_tag }}
+        {% for choice in form.reason_choice %}
+        <div class="radio-choice">
+            {{ choice.tag }}
+            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group other-reason-container" style="display: none;">
+        {{ form.other_reason.label_tag }}
+        {{ form.other_reason }}
+        {% if form.other_reason.errors %}
+        <div class="error">{{ form.other_reason.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.round_trip.label_tag }}
+        {{ form.round_trip }}
+    </div>
+
+    <button type="submit">Submit Request</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reasonRadios = document.querySelectorAll('input[name="reason_choice"]');
+        const otherContainer = document.querySelector('.other-reason-container');
+
+        function toggleOtherField() {
+            const selectedValue = document.querySelector('input[name="reason_choice"]:checked').value;
+            otherContainer.style.display = selectedValue === 'Other' ? 'block' : 'none';
+
+            // Make other_reason required only when "other" is selected
+            const otherInput = document.querySelector('#id_other_reason');
+            otherInput.required = selectedValue === 'Other';
+        }
+
+        // Add event listeners to all radio buttons
+        reasonRadios.forEach(radio => {
+            radio.addEventListener('change', toggleOtherField);
+        });
+
+        // Initial check
+        toggleOtherField();
+    });
+</script>
