@@ -3,20 +3,26 @@
 {% block title %}Submit Request{% endblock %}
 
 {% block content %}
+<div class="card bg-base-300 w-96 shadow-md mt-5">
+<div class="card-body">
 <form method="post">
     {% csrf_token %}
 
+    <h2 class="card-title">Request Form</h2>
+
     <div class="form-group">
         {{ form.reason_choice.label_tag }}
+        <br class="my-2">
         {% for choice in form.reason_choice %}
-        <div class="radio-choice">
+        <div >
+        <input class="radio m-2"
             {{ choice.tag }}
             <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
         </div>
         {% endfor %}
     </div>
 
-    <div class="form-group other-reason-container" style="display: none;">
+    <div class="form-group other-reason-container input my-2" style="display: none;">
         {{ form.other_reason.label_tag }}
         {{ form.other_reason }}
         {% if form.other_reason.errors %}
@@ -24,13 +30,30 @@
         {% endif %}
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-3">
         {{ form.round_trip.label_tag }}
-        {{ form.round_trip }}
+        <!-- {{ form.round_trip }} -->
+        <br>
+        {% for choice in form.round_trip %}
+        <input class="radio m-2"
+            {{ choice.tag }}
+            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+        <br>
+        {% endfor %}
+        <!-- {{ form.round_trip.tag }} -->
+        <!-- <br> -->
+        <!-- <br> -->
+        <!-- <input type="radio" name="radio-1" class="radio"> No -->
     </div>
 
-    <button type="submit">Submit Request</button>
+    <div class="divider my-2"></div>
+
+    <div class="card-actions justify-end">
+        <button class="btn btn-primary" type="submit">Submit Request</button>
+    </div>
 </form>
+</div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -39,7 +62,7 @@
 
         function toggleOtherField() {
             const selectedValue = document.querySelector('input[name="reason_choice"]:checked').value;
-            otherContainer.style.display = selectedValue === 'Other' ? 'block' : 'none';
+            otherContainer.style.display = selectedValue === 'Other' ? 'flex' : 'none';
 
             // Make other_reason required only when "other" is selected
             const otherInput = document.querySelector('#id_other_reason');

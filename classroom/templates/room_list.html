@@ -6,10 +6,10 @@
 {% if status %}
 <h2>{{ status }}</h2>
 {% endif %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-base-100 content-center justify-items-center max-w-50rem mt-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-base-100 justify-center max-w-900 mt-4">
     {% for room in rooms %}
     {% with students=room.current_students|length %}
-    <div class="card bg-base-300 w-81 shadow-md m-3">
+    <div class="card bg-base-300 w-80 shadow-md m-3">
     <div class="card-body">
         <form action="{% url 'room_list' %}" method="post">
             {% csrf_token %}

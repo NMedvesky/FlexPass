@@ -2,8 +2,14 @@ from django import forms
 
 
 class RequestForm(forms.Form):
+    YES_NO = [
+        (True, "Yes"),
+        (False, "No"),
+    ]
     round_trip = forms.BooleanField(
-        required=False, label="Will you return to your Flex Room?"
+        widget=forms.RadioSelect(choices=YES_NO),
+        required=True,
+        label="Will you return to your Flex Room?",
     )
 
     REASON_CHOICES = [

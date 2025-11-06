@@ -14,6 +14,10 @@ def index(request):
     return HttpResponse("Welcome to the classroom view.")
 
 
+def request_list(request):
+    return render(request, "request_list.html")
+
+
 def send_request(
     student,
     current_room: Classroom,
