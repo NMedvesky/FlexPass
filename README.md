@@ -16,7 +16,7 @@ Install `uv` [https://docs.astral.sh/uv/getting-started/installation/]
 
 In new a terminal, while navigated to the project directory, run:
 ```sh
-uv run manage.py runserver
+uv run manage.py tailwind dev
 ```
 
 Then in your browser navigate to the url provided from the program output.

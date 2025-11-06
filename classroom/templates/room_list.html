@@ -1,38 +1,58 @@
-<h1>Room List</h1>
+{% extends 'base.html' %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block content %}
 {% if status %}
 <h2>{{ status }}</h2>
 {% endif %}
-<ul>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-base-100 content-center justify-items-center max-w-50rem mt-4">
     {% for room in rooms %}
     {% with students=room.current_students|length %}
-    <li>
+    <div class="card bg-base-300 w-81 shadow-md m-3">
+    <div class="card-body">
         <form action="{% url 'room_list' %}" method="post">
             {% csrf_token %}
-            <h2>{{ room.name }} - {{ room.moderator.last_name }}</h2>
-            <p>Capacity: {{ students }}/{{ room.max_students }}</p>
+                <h2 class="card-title mb-1">{{ room.name }} <small> - {{ room.moderator.last_name }}</small></h2>
+            <!-- <h3>{{ room.moderator.last_name }}</h3> -->
+            
+            <div class="flex">
+                <progress class="progress progress-primary w-56 align-middle mr-2" value="{{ students }}" max="{{ room.max_students }}"></progress>
+                <p>{{ students }}/{{ room.max_students }}</p>
+            </div>
             <p>{{ room.description }}</p>
 
+            <div class="divider my-1"></div>
+
+            <div class="card-actions justify-end my-2 grid grid-cols-2">
             <input type="hidden" name="room_id" value="{{ room.id }}">
             {% if user.student.active_request.destination == room.id %}
-                <button disabled>Request</button>
                 <small>You sent a request to this room.</small>
+                <button class="btn btn-primary" disabled>Request</button>
             {% elif user.student.id in room.current_students %}
-                <button disabled>Request</button>
                 <small>You are in this room.</small>
+                <button class="btn btn-primary" disabled>Request</button>
             {% elif user.student.active_request %}
-                <button disabled>Request</button>
+                <div></div>
+                <button class="btn btn-primary" disabled>Request</button>
             {% elif students >= room.max_students %}
-                <button disabled>Request</button>
+                <div></div>
+                <button class="btn btn-primary" disabled>Request</button>
             {% elif room.open_room == True %}
-                <button type="submit" value="{{ room.name }}">Request</button>
+                <div></div>
+                <button class="btn btn-primary" type="submit" value="{{ room.name }}">Request</button>
             {% elif user.student.id in room.allowed_students %}
-                <button type="submit">Request</button>
-                <small>You have special access to this room.</small>
+                <small class="text-center align-middle">You have special access to this room.</small>
+                <button class="btn btn-primary" type="submit">Request</button>
             {% else %}
-                <button disabled>Request</button>
+                <div></div>
+                <button class="btn btn-primary" disabled>Request</button>
             {% endif %}
+            </div>
         </form>
-    </li>
+    </div>
+    </div>
     {% endwith %}
     {% endfor %}
-</ul>
+</div>
+{% endblock %}
