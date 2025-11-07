@@ -3,9 +3,37 @@
 {% block title %}Rooms{% endblock %}
 
 {% block content %}
-{% if status %}
-<h2>{{ status }}</h2>
+<div class="grid">
+{% if status == "success" %}
+    <div role="alert" class="alert alert-success mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Request Sent!</span>
+    </div>
+{% elif status == "failed" %}
+    <div role="alert" class="alert alert-error mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Failed to send request!</span>
+    </div>
 {% endif %}
+<label class="input justify-center align-middle w-auto mx-3 mt-5">
+    <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <g
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            stroke-width="2.5"
+            fill="none"
+            stroke="currentColor"
+        >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+        </g>
+    </svg>
+    <input type="search" required placeholder="Search" />
+</label>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-base-100 justify-center max-w-900 mt-4">
     {% for room in rooms %}
     {% with students=room.current_students|length %}
@@ -13,12 +41,14 @@
     <div class="card-body">
         <form action="{% url 'room_list' %}" method="post">
             {% csrf_token %}
-                <h2 class="card-title mb-1">{{ room.name }} <small> - {{ room.moderator.last_name }}</small></h2>
-            <!-- <h3>{{ room.moderator.last_name }}</h3> -->
+            <div class="flex justify-between">
+                <h2 class="card-title text-gold">{{ room.name }}</h2>
+                <h3 class="text-right justify-right self-center">{{ room.moderator.last_name }}</h3>
+            </div>
             
-            <div class="flex">
-                <progress class="progress progress-primary w-56 align-middle mr-2" value="{{ students }}" max="{{ room.max_students }}"></progress>
-                <p>{{ students }}/{{ room.max_students }}</p>
+            <div class="flex my-2">
+                <progress class="progress progress-primary w-55 self-center" value="{{ students }}" max="{{ room.max_students }}"></progress>
+                <p class="text-right justify-center self-center">{{ students }}/{{ room.max_students }}</p>
             </div>
             <p>{{ room.description }}</p>
 
@@ -27,10 +57,10 @@
             <div class="card-actions justify-end my-2 grid grid-cols-2">
             <input type="hidden" name="room_id" value="{{ room.id }}">
             {% if user.student.active_request.destination == room.id %}
-                <small>You sent a request to this room.</small>
+                <strong class="text-sm text-center align-middle">Pending Request</strong>
                 <button class="btn btn-primary" disabled>Request</button>
             {% elif user.student.id in room.current_students %}
-                <small>You are in this room.</small>
+                <strong class="text-sm text-center self-center">Current Room</strong>
                 <button class="btn btn-primary" disabled>Request</button>
             {% elif user.student.active_request %}
                 <div></div>
@@ -42,7 +72,7 @@
                 <div></div>
                 <button class="btn btn-primary" type="submit" value="{{ room.name }}">Request</button>
             {% elif user.student.id in room.allowed_students %}
-                <small class="text-center align-middle">You have special access to this room.</small>
+                <strong class="text-sm text-center self-center">You have special access to this room</strong>
                 <button class="btn btn-primary" type="submit">Request</button>
             {% else %}
                 <div></div>
@@ -54,5 +84,6 @@
     </div>
     {% endwith %}
     {% endfor %}
+</div>
 </div>
 {% endblock %}

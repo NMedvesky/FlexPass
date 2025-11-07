@@ -26,10 +26,10 @@ def send_request(
     round_trip: bool,
 ) -> str:
     if len(destination.current_students) >= destination.max_students:
-        return "Room full! Unable to send request."
+        return "failed"
 
     if student.id in destination.current_students:
-        return "Student already in room! Unable to send request."
+        return "failed"
 
     request = Request.objects.create(
         requesting_student=student.id,
@@ -44,7 +44,7 @@ def send_request(
     student.active_request = request
     student.save()
 
-    return "Request Sent!"
+    return "success"
 
 
 def approve_request():
@@ -53,18 +53,18 @@ def approve_request():
 
 @login_required()
 def request(request):
+    destination_room_id = request.GET.get("destination")
+    destination = Classroom.objects.get(pk=destination_room_id)
+
     if request.method == "POST":
         form = RequestForm(request.POST)
         if form.is_valid():
             reason = form.get_reason()
             round_trip = form.clean()["round_trip"]
 
-            # current_room_id = request.GET.get("current_room_id")
             current_room_id = request.user.student.current_location
-            destination_room_id = request.GET.get("destination")
 
             current_room = Classroom.objects.get(pk=current_room_id)
-            destination = Classroom.objects.get(pk=destination_room_id)
 
             status = send_request(
                 request.user.student, current_room, destination, reason, round_trip
@@ -74,7 +74,8 @@ def request(request):
             return redirect(f"/classroom/rooms?{encoded_params}")
     else:
         form = RequestForm()
-    return render(request, "request.html", {"form": form})
+
+    return render(request, "request.html", {"form": form, "room": destination})
 
 
 @login_required()
