@@ -2,6 +2,36 @@
 
 A system for managing students during flex times, and coordinating hall passes for students.
 
+## Setup Project
+### Prerequisites
+- `docker` [https://docs.docker.com/compose/install/]
+Used to easy run PostgreSQL consistently for testing.
+- `uv` [https://docs.astral.sh/uv/getting-started/installation/]
+Replaces default python package manager (pip) with a more consistent one.
+- `npm` [https://nodejs.org/en/download/]
+Needed for Tailwind CSS integration.
+
+### Notes
+On Windows Docker Desktop will need to be running in the background for Docker Compose to work.
+All commands listed are expected to be run while navigated to the project directory.
+
+### Setup
+Tailwind CSS packages need to be installed.
+```sh
+uv run manage.py tailwind install
+```
+
+### Database Migrations
+First ensure database is running.
+```sh
+docker compose up
+```
+
+Perform database migrations if any changes have been made to it since last pull.
+```sh
+uv run manage.py migrate
+```
+
 ## Running The Project
 ### Run the database
 Install `docker` [https://docs.docker.com/compose/install/]
@@ -19,10 +49,4 @@ In new a terminal, while navigated to the project directory, run:
 uv run manage.py tailwind dev
 ```
 
-Then in your browser navigate to the url provided from the program output.
-
-### Database Migrations
-If there are database changes you may need to migrate your local database. To do so make sure the database is running and then run the following command in the project directory:
-```sh
-uv run manage.py migrate
-```
+Then in your browser navigate to `http://127.0.0.1:8000`.
